@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connection_notification_title">Connected</string>
+    <string name="connection_notification_ticker">Connected to Boogie Board Sync</string>
+    <string name="connection_notification_text">Say goodbye to paper!</string>
+    <string name="disconnection_notification_title">Disconnected</string>
+    <string name="disconnection_notification_ticker">Disconnected from Boogie Board Sync</string>
+    <string name="update_firmware_notification_title">Update firmware</string>
+    <string name="update_firmware_notification_text">Your Boogie Board Sync firmware needs to be updated.</string>
+    <string name="update_firmware_notification_big_text">Your Boogie Board Sync firmware needs to be updated in order to take advantage of newly added features. Click here to learn more.</string>
+</resources>

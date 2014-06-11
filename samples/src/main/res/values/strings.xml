@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Sync SDK Samples</string>
+    <string name="title_activity_main">Sync SDK Samples</string>
+    <string name="title_activity_streaming">StreamingActivity</string>
+    <string name="title_activity_file_browsing">FileBrowsingActivity</string>
+
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connection_notification_title">接続されました</string>
+    <string name="connection_notification_ticker">Boogie Board Syncと接続されました</string>
+    <string name="connection_notification_text">紙よ、サヨウナラ！</string>
+    <string name="disconnection_notification_title">接続は切断されました</string>
+    <string name="disconnection_notification_ticker">Boogie Board Syncとの接続は切断されました</string>
+    <string name="update_firmware_notification_title">ファームウェアを更新しました</string>
+    <string name="update_firmware_notification_text">Boogie Board Syncのフォームウェアは更新する必要があります</string>
+    <string name="update_firmware_notification_big_text">アプリに追加された全機能を使うために、Boogie Board Syncのファームウェアを更新してください。更新方法については、ここをクリックして確認してください。</string>
+</resources>

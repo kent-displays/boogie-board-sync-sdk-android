@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.improvelectronics.sync.android.samples">
+
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
+    <application
+            android:allowBackup="true"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Holo.Light">
+        <activity
+                android:name="com.improvelectronics.sync.android.samples.MainActivity"
+                android:label="@string/title_activity_main">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name="com.improvelectronics.sync.android.samples.StreamingActivity"
+                android:label="@string/title_activity_streaming"
+                android:parentActivityName="com.improvelectronics.sync.android.samples.MainActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="MainActivity"/>
+        </activity>
+        <activity
+                android:name="com.improvelectronics.sync.android.samples.FileBrowsingActivity"
+                android:label="@string/title_activity_file_browsing"
+                android:parentActivityName="com.improvelectronics.sync.android.samples.MainActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="MainActivity"/>
+        </activity>
+    </application>
+
+</manifest>
