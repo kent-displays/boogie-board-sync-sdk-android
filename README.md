@@ -6,7 +6,7 @@ The software development kit provides a library for communicating with a Boogie 
 
 *Note: This library is to be used on Android SDK 15+ (Ice Cream Sandwich). All communication is done using Bluetooth.*
 
-- [Installing](#installing-anchor)
+- [Installing](#installing)
 - [Configuring](#configuring-anchor)
 - [Structure](#structure-anchor)
 - [Documentation](#documentation-anchor)
@@ -14,7 +14,7 @@ The software development kit provides a library for communicating with a Boogie 
 - [Questions?](#questions-anchor)
 - [License](#license-anchor)
 
-##<a id="installing-anchor"></a> Installing
+## Installing
 
 Note: This library was built with [Android Studio](http://developer.android.com/sdk/installing/studio.html) and is set up to go with the gradle build system. At this time there is no support for the Eclipse IDE.
 
