@@ -7,12 +7,12 @@ The software development kit provides a library for communicating with a Boogie 
 *Note: This library is to be used on Android SDK 15+ (Ice Cream Sandwich). All communication is done using Bluetooth.*
 
 - [Installing](#installing)
-- [Configuring](#configuring-anchor)
-- [Structure](#structure-anchor)
-- [Documentation](#documentation-anchor)
-- [Limitations](#limitations-anchor)
-- [Questions?](#questions-anchor)
-- [License](#license-anchor)
+- [Configuring](#configuring)
+- [Structure](#structure)
+- [Documentation](#documentation)
+- [Limitations](#limitations)
+- [Questions?](#questions)
+- [License](#license)
 
 ## Installing
 
@@ -39,10 +39,10 @@ To include this library in your current project first download the library folde
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     ```
 
-##<a id="configuring-anchor"></a> Configuring
+## Configuring
 To allow for easy configuration there is a single java class called *Config.java*. Here you can turn on/off debugging for the entire library.
 
-##<a id="structure-anchor"></a> Structure
+## Structure
 This is a quick overview on how the entire library and API are structured for use. **Highly recommend reading this before starting.**
 
 This library is broken up into two essential parts. On one side you have the Streaming API where you can get erase/save button pushes as well as real-time paths that are drawn on the Sync. On the other is the File Transfer API where you can delete, download files from the Sync as well as traverse the internal directory structure of the Sync.
@@ -74,25 +74,25 @@ private final ServiceConnection mConnection = new ServiceConnection() {
 ```
 
 
-##<a id="documentation-anchor"></a> Documentation
+## Documentation
 
 Javadocs for this library can be found [here](#).
 
 
-##<a id="limitations-anchor"></a> Limitations
+## Limitations
 There are the following limitations still imposed upon this library.
 
 - Can only communicate with one Boogie Board Sync at a time. This can also cause issues with having more than one Sync paired at a time.
 - Running the [Boogie Board Sync app](https://play.google.com/store/apps/details?id=com.improvelectronics.sync_android), on your Android device, at the same time as this project can cause some issues. In order to correct this, make sure to shutdown all processes and services for the Boogie Board Sync app from your device's settings.
 
-##<a id="questions-anchor"></a> Questions?
+## Questions?
 
 For questions or comments email or contact us on Twitter
 
 - [cfullmer@kentdisplays.com](mailto:cfullmer@kentdisplays.com)
 - [@camdenfullmer](http://twitter.com/camdenfullmer)
 
-##<a id="license-anchor"></a> License
+## License
 
 Copyright © 2014 Kent Displays, Inc.
 
