@@ -31,6 +31,10 @@ To include this library in your current project first download the library folde
 	```
 
 2. Make sure to include the new module in your *settings.gradle* file as well.
+	
+	```
+	include ':library', ':app'
+	```
 
 3. Add the following permissions to the top level of your project's *AndroidManifest.xml* file.
 
@@ -40,6 +44,7 @@ To include this library in your current project first download the library folde
     ```
 
 ## Configuring
+
 To allow for easy configuration there is a single java class called *Config.java*. Here you can turn on/off debugging for the entire library.
 
 ## Structure
