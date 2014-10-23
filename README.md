@@ -65,7 +65,7 @@ private final ServiceConnection mConnection = new ServiceConnection() {
          mFtpService = binder.getService();
          mFtpService.addListener(PlaceholderFragment.this);// Add listener to retrieve events from ftp service.
 
-         if(mFtpService.getState() == SyncStreamingService.STATE_CONNECTED) {
+         if(mFtpService.getState() == SyncFtpService.STATE_CONNECTED) {
              // Connect to the ftp server.
              mFtpService.connect();
          }
