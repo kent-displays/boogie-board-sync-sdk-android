@@ -18,10 +18,16 @@ The software development kit provides a library for communicating with a Boogie 
 
 Note: This library was built with [Android Studio](http://developer.android.com/sdk/installing/studio.html) and is set up to go with the gradle build system. At this time there is no support for the Eclipse IDE.
 
-#### Option 1: Download entire project
+#### Option 1: Include dependency
+
+	dependencies {
+	    compile 'kentdisplays:boogie-board-sync-sdk-android:1.0.0'
+	}
+
+#### Option 2: Download entire project
 Download the entire project directory here and then just import the project into Android Studio. From there you should be able to get up and running with the included samples.
 
-#### Option 2: Include library
+#### Option 3: Include library
 To include this library in your current project first download the library folder from this project. The folder already contains the appropriate build file for gradle, but there are a few more steps to follow.
 
 1. Add the following line to the list of dependencies listed in your project's *build.gradle* file.
