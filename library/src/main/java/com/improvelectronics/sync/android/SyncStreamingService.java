@@ -1,30 +1,33 @@
-/*****************************************************************************
- Copyright © 2014 Kent Displays, Inc.
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- ****************************************************************************/
+/**
+ * **************************************************************************
+ * Copyright © 2014 Kent Displays, Inc.
+ * <p/>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * <p/>
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * <p/>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * **************************************************************************
+ */
 
 package com.improvelectronics.sync.android;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -33,14 +36,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.os.ParcelUuid;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -76,7 +79,6 @@ public class SyncStreamingService extends Service {
     private static final UUID LISTEN_UUID = UUID.fromString("d6a56f81-88f8-11e3-baa8-0800200c9a66");
     private static final UUID CONNECT_UUID = UUID.fromString("d6a56f80-88f8-11e3-baa8-0800200c9a66");
     private static final int NOTIFICATION_ID = 1313;
-    private static final int FIRMWARE_NOTIFICATION_ID = 1316;
     private static final String TAG = SyncStreamingService.class.getSimpleName();
     private static final boolean DEBUG = Config.DEBUG;
     private BluetoothAdapter mBluetoothAdapter;
@@ -268,7 +270,7 @@ public class SyncStreamingService extends Service {
     private synchronized void start() {
         if (DEBUG) Log.d(TAG, "start");
 
-        if(mPairedDevices.size() > 0) {
+        if (mPairedDevices.size() > 0) {
             // Start the thread to listen on a BluetoothServerSocket
             if (mAcceptThread == null) {
                 mAcceptThread = new AcceptThread();
@@ -276,9 +278,9 @@ public class SyncStreamingService extends Service {
             }
 
             // Only change state to listening if we are disconnected.
-            if(mState == STATE_DISCONNECTED) updateDeviceState(STATE_LISTENING);
+            if (mState == STATE_DISCONNECTED) updateDeviceState(STATE_LISTENING);
 
-            if(mState != STATE_CONNECTED && mState != STATE_CONNECTING) {
+            if (mState != STATE_CONNECTED && mState != STATE_CONNECTING) {
                 connect(mPairedDevices.get(0));
             }
         } else {
@@ -507,22 +509,6 @@ public class SyncStreamingService extends Service {
                 mPairedDevices.add(device);
             }
         }
-
-        // Connect to the first device that was found in the list of paired devices.
-        if (mPairedDevices.size() > 0 && mState != STATE_CONNECTED) {
-            BluetoothDevice device = mPairedDevices.get(0);
-
-            // Device must first be checked to see if it has the most up to date firmware.
-            // This check is done by ensuring the device has all the correct UUIDs.
-            // If it doesn't have the CONNECT_UUID then the firmware is not the latest.
-            boolean foundUuid = false;
-            for (ParcelUuid uuid : device.getUuids()) {
-                if (uuid.getUuid().equals(CONNECT_UUID)) foundUuid = true;
-            }
-            if (!foundUuid) {
-                showUpdateFirmwareNotification();
-            }
-        }
     }
 
     /**
@@ -578,12 +564,12 @@ public class SyncStreamingService extends Service {
             mMode = MODE_NONE;
             mPaths.clear();
 
-            if (oldState == STATE_CONNECTED) showDisconnectionNotification();
+            if (oldState == STATE_CONNECTED) removeNotification();
         } else if (newState == STATE_CONNECTED) {
             setSyncMode(MODE_FILE);
             updateSyncTimeWithLocalTime();
             informSyncOfDevice();
-            showConnectionNotification(true);
+            showConnectionNotification();
         }
 
         broadcastStateChange(mState, oldState);
@@ -616,12 +602,14 @@ public class SyncStreamingService extends Service {
                         Log.e(TAG, "was unable to parse the returned message from the Sync");
                     } else if (hidMessage instanceof SyncCaptureReport) {
                         SyncCaptureReport captureReport = (SyncCaptureReport) hidMessage;
-                        for (SyncStreamingListener listener : mListeners) listener.onCaptureReport(captureReport);
+                        for (SyncStreamingListener listener : mListeners)
+                            listener.onCaptureReport(captureReport);
 
                         // Filter the paths that are returned from the Boogie Board Sync.
                         List<SyncPath> paths = Filtering.filterSyncCaptureReport(captureReport);
                         if (paths.size() > 0) {
-                            for (SyncStreamingListener listener : mListeners) listener.onDrawnPaths(paths);
+                            for (SyncStreamingListener listener : mListeners)
+                                listener.onDrawnPaths(paths);
                             mPaths.addAll(paths);
                         }
 
@@ -911,43 +899,33 @@ public class SyncStreamingService extends Service {
         }
     }
 
-    private void showConnectionNotification(boolean showTicker) {
+    private void showConnectionNotification() {
+        PackageManager pm = getPackageManager();
+        Intent intent = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName());
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        try {
+            stackBuilder.addParentStack(Class.forName(intent.getComponent().getClassName()));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        stackBuilder.addNextIntent(intent);
+        PendingIntent pendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
         // Send notification that we are now connected.
-        mNotificationBuilder.setProgress(0, 0, false);
-        mNotificationBuilder.setContentTitle(getResources().getString(R.string.connection_notification_title))
+        mNotificationBuilder.setProgress(0, 0, false)
+                .setContentTitle(getResources().getString(R.string.connection_notification_title))
                 .setContentText(getResources().getString(R.string.connection_notification_text))
+                .setShowWhen(false)
+                .setColor(Color.rgb(255, 131, 0))
+                .setContentIntent(pendingIntent)
+                .setTicker(getResources().getString(R.string.connection_notification_ticker))
                 .setOngoing(true);
 
-        if (showTicker) {
-            mNotificationBuilder.setTicker(getResources().getString(R.string.connection_notification_ticker));
-        } else {
-            mNotificationBuilder.setTicker(null);
-        }
-
         mNotificationManager.notify(NOTIFICATION_ID, mNotificationBuilder.build());
-    }
-
-    private void showDisconnectionNotification() {
-        mNotificationBuilder.setProgress(0, 0, false);
-        mNotificationBuilder.setContentTitle(getResources().getString(R.string.disconnection_notification_title))
-                .setTicker(getResources().getString(R.string.disconnection_notification_ticker))
-                .setContentText(getResources().getString(R.string.disconnection_notification_ticker))
-                .setOngoing(false);
-        mNotificationManager.notify(NOTIFICATION_ID, mNotificationBuilder.build());
-    }
-
-    private void showUpdateFirmwareNotification() {
-        mNotificationBuilder.setSmallIcon(R.drawable.ic_stat_notify_default);
-        mNotificationBuilder.setTicker(getResources().getString(R.string.update_firmware_notification_title));
-        mNotificationBuilder.setContentTitle(getResources().getString(R.string.update_firmware_notification_title));
-        mNotificationBuilder.setContentText(getResources().getString(R.string.update_firmware_notification_text));
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse("http://improvelectronics.com/support/boogie-board-firmware-update.html"));
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        mNotificationBuilder.setContentIntent(pendingIntent);
-        mNotificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(getResources().getString(R.string
-                .update_firmware_notification_big_text)));
-        mNotificationManager.notify(FIRMWARE_NOTIFICATION_ID, mNotificationBuilder.build());
     }
 
     private void removeNotification() {
@@ -975,7 +953,7 @@ public class SyncStreamingService extends Service {
     private final byte[] DUMMY_PACKET = new byte[]{(byte) 0xC0}; // Dummy packet just contains a frame end.
 
     private void startBluetoothHack() {
-        if (Build.VERSION.SDK_INT < 18) return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
 
         mBluetoothHackTimer = new Timer();
         mBluetoothHackTimerTask = new TimerTask() {
@@ -989,7 +967,7 @@ public class SyncStreamingService extends Service {
     }
 
     private void stopBluetoothHack() {
-        if (Build.VERSION.SDK_INT < 18) return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
 
         if (mBluetoothHackTimer != null) {
             mBluetoothHackTimer.cancel();
