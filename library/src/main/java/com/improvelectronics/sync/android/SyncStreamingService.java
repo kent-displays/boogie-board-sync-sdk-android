@@ -24,10 +24,7 @@
 
 package com.improvelectronics.sync.android;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -36,19 +33,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.improvelectronics.sync.Config;
-import com.improvelectronics.sync.androidsdk.R;
 import com.improvelectronics.sync.hid.HIDMessage;
 import com.improvelectronics.sync.hid.HIDSetReport;
 import com.improvelectronics.sync.hid.HIDUtilities;
@@ -78,7 +71,6 @@ public class SyncStreamingService extends Service {
 
     private static final UUID LISTEN_UUID = UUID.fromString("d6a56f81-88f8-11e3-baa8-0800200c9a66");
     private static final UUID CONNECT_UUID = UUID.fromString("d6a56f80-88f8-11e3-baa8-0800200c9a66");
-    private static final int NOTIFICATION_ID = 1313;
     private static final String TAG = SyncStreamingService.class.getSimpleName();
     private static final boolean DEBUG = Config.DEBUG;
     private BluetoothAdapter mBluetoothAdapter;
@@ -90,8 +82,6 @@ public class SyncStreamingService extends Service {
     private AcceptThread mAcceptThread;
     private List<BluetoothDevice> mPairedDevices;
     private List<SyncPath> mPaths;
-    private NotificationManager mNotificationManager;
-    private NotificationCompat.Builder mNotificationBuilder;
 
     // Used for updating the local time of the Sync.
     private static final int YEAR_OFFSET = 1980;
@@ -190,10 +180,6 @@ public class SyncStreamingService extends Service {
         mListeners = new ArrayList<SyncStreamingListener>();
         mState = STATE_DISCONNECTED;
         mMode = MODE_NONE;
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationBuilder = new NotificationCompat.Builder(this);
-        mNotificationBuilder.setSmallIcon(R.drawable.ic_stat_notify_default);
-        removeNotification();
         setupIntentFilter();
 
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
@@ -563,13 +549,10 @@ public class SyncStreamingService extends Service {
             // Reset the mode of the Boogie Board Sync.
             mMode = MODE_NONE;
             mPaths.clear();
-
-            if (oldState == STATE_CONNECTED) removeNotification();
         } else if (newState == STATE_CONNECTED) {
             setSyncMode(MODE_FILE);
             updateSyncTimeWithLocalTime();
             informSyncOfDevice();
-            showConnectionNotification();
         }
 
         broadcastStateChange(mState, oldState);
@@ -897,39 +880,6 @@ public class SyncStreamingService extends Service {
                 Log.e(TAG, "close() of connect socket failed", e);
             }
         }
-    }
-
-    private void showConnectionNotification() {
-        PackageManager pm = getPackageManager();
-        Intent intent = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName());
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        try {
-            stackBuilder.addParentStack(Class.forName(intent.getComponent().getClassName()));
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        stackBuilder.addNextIntent(intent);
-        PendingIntent pendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-
-        // Send notification that we are now connected.
-        mNotificationBuilder.setProgress(0, 0, false)
-                .setContentTitle(getResources().getString(R.string.connection_notification_title))
-                .setContentText(getResources().getString(R.string.connection_notification_text))
-                .setShowWhen(false)
-                .setColor(Color.rgb(255, 131, 0))
-                .setContentIntent(pendingIntent)
-                .setTicker(getResources().getString(R.string.connection_notification_ticker))
-                .setOngoing(true);
-
-        mNotificationManager.notify(NOTIFICATION_ID, mNotificationBuilder.build());
-    }
-
-    private void removeNotification() {
-        mNotificationManager.cancel(NOTIFICATION_ID);
     }
 
     /**
