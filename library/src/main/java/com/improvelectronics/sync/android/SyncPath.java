@@ -30,6 +30,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -127,4 +128,61 @@ public class SyncPath extends Path implements Parcelable {
             return new SyncPath[size];
         }
     };
+
+
+    @Override
+    public boolean equals(Object o) {
+        // Return true if the objects are identical.
+        // (This is just an optimization, not required for correctness.)
+        if (this == o) {
+            return true;
+        }
+
+        // Return false if the other object has the wrong type.
+        // This type may be an interface depending on the interface's specification.
+        if (!(o instanceof SyncPath)) {
+            return false;
+        }
+
+        // Cast to the appropriate type.
+        // This will succeed because of the instanceof, and lets us access private fields.
+        SyncPath lhs = (SyncPath) o;
+
+        // Check each field. Primitive fields, reference fields, and nullable reference
+        // fields are all treated differently.
+        if (mStrokeWidth != lhs.getStrokeWidth()) {
+            return false;
+        }
+
+        if (mPoints == null && lhs.getPoints() == null) {
+            return true;
+        } else if (mPoints == null) {
+            return false;
+        }
+
+        if (mPoints.size() != lhs.getPoints().size()) {
+            return false;
+        }
+
+        for (int i = 0; i < mPoints.size(); i++) {
+            PointF point = mPoints.get(i);
+            PointF lhsPoint = lhs.getPoints().get(i);
+            if (!point.equals(lhsPoint.x, lhsPoint.y)) return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        // Start with a non-zero constant.
+        int result = 17;
+
+        // Include a hash for each field.
+        result = 31 * result + (int)mStrokeWidth;
+
+        result = 31 * result + mPoints.hashCode();
+
+        return result;
+    }
 }
