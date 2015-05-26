@@ -1,6 +1,6 @@
 ![Boogie Board Sync and Android](http://i.imgur.com/SH4bzBT.png "Boogie Board Sync and Android")
 
-# Boogie Board Sync SDK v1.0 for Android
+# Boogie Board Sync SDK v1.0.0 for Android
 
 The software development kit provides a library for communicating with a Boogie Board Sync on Android. This library allows developers to view, modify and retrieve aspects of the file system on the Sync. It also allows developers to retrieve real-time information like current position of the stylus and a user pressing the save and erase button.
 
@@ -20,9 +20,7 @@ Note: This library was built with [Android Studio](http://developer.android.com/
 
 #### Option 1: Include dependency
 
-	dependencies {
-	    compile 'kentdisplays:boogie-board-sync-sdk-android:1.0.0'
-	}
+[Link to instructions](https://jitpack.io/#kent-displays/boogie-board-sync-sdk-android/1.0.0)
 
 #### Option 2: Download entire project
 Download the entire project directory here and then just import the project into Android Studio. From there you should be able to get up and running with the included samples.
